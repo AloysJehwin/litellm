@@ -32,6 +32,12 @@ CHEAP_OPENAI_MODEL = os.environ.get("E2E_CHEAP_OPENAI_MODEL", "gpt-5.5")
 # read exported spans back through it.
 OTEL_QUERY_URL = os.environ.get("E2E_OTEL_QUERY_URL", "http://localhost:16686").rstrip("/")
 
+# The MCP upstream the mcp suite registers on the proxy: the mcp-stub compose
+# service, addressed by service name on the compose network. It must be
+# reachable from the proxy, not from pytest; override when the proxy under
+# test runs somewhere the compose stub is not visible from.
+MCP_STUB_URL = os.environ.get("E2E_MCP_STUB_URL", "http://mcp-stub:8765/mcp")
+
 # Writes on the proxy are eventually consistent (e.g. spend rows flush on
 # proxy_batch_write_at, ~60s). Read-backs poll to this deadline, never sleep-once.
 POLL_TIMEOUT = float(os.environ.get("E2E_POLL_TIMEOUT", "120"))
