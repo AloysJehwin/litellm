@@ -245,18 +245,23 @@ def _get_cli_sso_flow_or_raise(login_id: Optional[str], cache: DualCache) -> dic
         raise HTTPException(status_code=400, detail="Invalid CLI login session")
 
     cache_key = _get_cli_sso_flow_cache_key(cast(str, login_id))
-    flow = cache.get_cache(key=cache_key)
+    redis_cache = cache.redis_cache
+    if redis_cache is not None:
+        flow = redis_cache.get_cache(key=cache_key)
+    else:
+        flow = cache.get_cache(key=cache_key)
     if not isinstance(flow, dict) or "poll_secret_hash" not in flow:
         raise HTTPException(status_code=400, detail="Invalid CLI login session")
     return flow
 
 
 def _set_cli_sso_flow(login_id: str, cache: DualCache, flow: dict) -> None:
-    cache.set_cache(
-        key=_get_cli_sso_flow_cache_key(login_id),
-        value=flow,
-        ttl=CLI_SSO_SESSION_TTL_SECONDS,
-    )
+    cache_key = _get_cli_sso_flow_cache_key(login_id)
+    redis_cache = cache.redis_cache
+    if redis_cache is not None:
+        redis_cache.set_cache(key=cache_key, value=flow, ttl=CLI_SSO_SESSION_TTL_SECONDS)
+    else:
+        cache.set_cache(key=cache_key, value=flow, ttl=CLI_SSO_SESSION_TTL_SECONDS)
 
 
 def _verify_cli_sso_poll_secret(flow: dict, poll_secret: Optional[str]) -> bool:
