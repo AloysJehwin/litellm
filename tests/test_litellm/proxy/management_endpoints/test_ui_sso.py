@@ -2201,7 +2201,10 @@ class TestCLIKeyRegenerationFlow:
         mock_cache = MagicMock()
         mock_cache.increment_cache.return_value = 1
 
-        with patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache):
+        with (
+            patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
+        ):
             result = await cli_sso_start(request=mock_request)
 
         assert result["login_id"].startswith("cli-")
@@ -2232,7 +2235,10 @@ class TestCLIKeyRegenerationFlow:
         mock_cache = MagicMock()
         mock_cache.increment_cache.return_value = 31
 
-        with patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache):
+        with (
+            patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
+        ):
             with pytest.raises(HTTPException) as exc_info:
                 await cli_sso_start(request=mock_request)
 
@@ -2328,6 +2334,7 @@ class TestCLIKeyRegenerationFlow:
                 patch("litellm.proxy.proxy_server.premium_user", True),
                 patch("litellm.proxy.proxy_server.prisma_client", MagicMock()),
                 patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+                patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
                 patch(
                     "litellm.proxy.proxy_server.user_custom_ui_sso_sign_in_handler",
                     None,
@@ -2514,6 +2521,7 @@ class TestCLIKeyRegenerationFlow:
             ),
             patch("litellm.proxy.proxy_server.prisma_client", MagicMock()),
             patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
         ):
             result = await cli_sso_callback(
                 request=mock_request,
@@ -2552,6 +2560,7 @@ class TestCLIKeyRegenerationFlow:
 
         with (
             patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
             patch(
                 "litellm.proxy.common_utils.html_forms.cli_sso_success.render_cli_sso_success_page",
                 return_value="<html>Success</html>",
@@ -2588,7 +2597,10 @@ class TestCLIKeyRegenerationFlow:
             "session_data": {"user_id": "test-user-123"},
         }
 
-        with patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache):
+        with (
+            patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
+        ):
             with pytest.raises(HTTPException) as exc_info:
                 await cli_sso_complete(
                     request=mock_request, login_id="cli-session-4567890"
@@ -2621,7 +2633,10 @@ class TestCLIKeyRegenerationFlow:
             "session_data": None,
         }
 
-        with patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache):
+        with (
+            patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
+        ):
             with pytest.raises(HTTPException) as exc_info:
                 await cli_sso_complete(
                     request=mock_request, login_id="cli-session-4567890"
@@ -2679,6 +2694,7 @@ class TestCLIKeyRegenerationFlow:
             ),
             patch("litellm.proxy.proxy_server.prisma_client", MagicMock()),
             patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
             patch(
                 "litellm.proxy.common_utils.html_forms.cli_sso_success.render_cli_sso_success_page",
                 return_value="<html>Success</html>",
@@ -2747,7 +2763,10 @@ class TestCLIKeyRegenerationFlow:
             "session_data": session_data,
         }
 
-        with patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache):
+        with (
+            patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
+        ):
             # Act - First poll without team_id
             result = await cli_poll_key(
                 key_id=session_key,
@@ -2786,7 +2805,10 @@ class TestCLIKeyRegenerationFlow:
             },
         }
 
-        with patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache):
+        with (
+            patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
+        ):
             with pytest.raises(HTTPException) as exc_info:
                 await cli_poll_key(key_id="cli-session-789123", team_id=None)
 
@@ -2813,7 +2835,10 @@ class TestCLIKeyRegenerationFlow:
             },
         }
 
-        with patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache):
+        with (
+            patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
+        ):
             result = await cli_poll_key(
                 key_id="cli-session-789123",
                 team_id=None,
@@ -2991,6 +3016,7 @@ class TestCLIKeyRegenerationFlow:
 
         with (
             patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
             patch("litellm.proxy.proxy_server.prisma_client"),
             patch(
                 "litellm.proxy.auth.auth_checks.ExperimentalUIJWTToken.get_cli_jwt_auth_token",
@@ -3065,6 +3091,7 @@ class TestCLIKeyRegenerationFlow:
 
         with (
             patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
             patch("litellm.proxy.proxy_server.prisma_client"),
             patch(
                 "litellm.proxy.auth.auth_checks.ExperimentalUIJWTToken.get_cli_jwt_auth_token",
@@ -3127,6 +3154,7 @@ class TestCLIKeyRegenerationFlow:
 
         with (
             patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
             patch("litellm.proxy.proxy_server.prisma_client"),
             patch(
                 "litellm.proxy.auth.auth_checks.ExperimentalUIJWTToken.get_cli_jwt_auth_token",
@@ -6251,6 +6279,7 @@ class TestCliSsoAttributionMetadata:
             ),
             patch("litellm.proxy.proxy_server.prisma_client", MagicMock()),
             patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
             patch("litellm.proxy.proxy_server.user_custom_sso", None),
         ):
             await ui_sso.cli_sso_callback(
@@ -6298,6 +6327,7 @@ class TestCliSsoAttributionMetadata:
             ) as get_user_info_mock,
             patch("litellm.proxy.proxy_server.prisma_client", MagicMock()),
             patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
             patch("litellm.proxy.proxy_server.user_custom_sso", None),
             patch(
                 "litellm.proxy.proxy_server.general_settings",
@@ -6372,6 +6402,7 @@ class TestCliSsoAttributionMetadata:
             ),
             patch("litellm.proxy.proxy_server.prisma_client", mock_prisma),
             patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
             patch("litellm.proxy.proxy_server.user_custom_sso", None),
             patch(
                 "litellm.proxy.common_utils.html_forms.cli_sso_success.render_cli_sso_success_page",
@@ -6421,7 +6452,10 @@ class TestCliSsoAttributionMetadata:
             "session_data": session_data,
         }
 
-        with patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache):
+        with (
+            patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+            patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
+        ):
             result = await cli_poll_key(
                 key_id=session_key,
                 team_id=None,
@@ -7284,6 +7318,7 @@ async def test_cli_poll_key_tolerates_missing_user_row():
 
     with (
         patch("litellm.proxy.proxy_server.user_api_key_cache", mock_cache),
+        patch("litellm.proxy.proxy_server.cli_sso_session_cache", mock_cache),
         patch("litellm.proxy.proxy_server.prisma_client"),
         patch(
             "litellm.proxy.auth.auth_checks.ExperimentalUIJWTToken.get_cli_jwt_auth_token",
