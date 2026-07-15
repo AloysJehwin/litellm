@@ -178,10 +178,6 @@ class _PROXY_LiteLLMManagedFiles(CustomLogger, BaseFileEndpoints):
             model_object_id=model_object_id,
             file_purpose=file_purpose,
             file_object=file_object,
-            created_by=user_api_key_dict.user_id,
-            team_id=user_api_key_dict.team_id,
-            user_api_key=user_api_key,
-            request_tags=request_tags,
         )
         await self.internal_usage_cache.async_set_cache(
             key=unified_object_id,
